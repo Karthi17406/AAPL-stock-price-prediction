@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Apple Stock Prediction Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- PapaParse - CSV parser -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">A</div>
+
+            <div>
+                <h2>StockAI</h2>
+                <span>Prediction Engine</span>
+            </div>
+        </div>
+
+
+        <nav>
+
+            <a href="#" class="nav-item active">
+                <span>▣</span>
+                Dashboard
+            </a>
+
+            <a href="#predictions" class="nav-item">
+                <span>◉</span>
+                Predictions
+            </a>
+
+            <a href="#performance" class="nav-item">
+                <span>↗</span>
+                Performance
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="model-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>Model Online</strong>
+                    <small>Random Forest</small>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- HEADER -->
+
+        <header class="topbar">
+
+            <div>
+                <p class="eyebrow">MACHINE LEARNING</p>
+
+                <h1>
+                    Apple Stock Prediction
+                </h1>
+
+                <p class="subtitle">
+                    5-minute price prediction using Random Forest Regression
+                </p>
+            </div>
+
+
+            <div class="market-status">
+
+                <span class="status-dot"></span>
+
+                Historical Test Data
+
+            </div>
+
+        </header>
+
+
+        <!-- STOCK HEADER -->
+
+        <section class="stock-header">
+
+            <div class="stock-name">
+
+                <div class="apple-icon">
+                    AAPL
+                </div>
+
+                <div>
+                    <h2>Apple Inc.</h2>
+                    <span>NASDAQ · AAPL</span>
+                </div>
+
+            </div>
+
+
+            <div class="stock-price">
+
+                <span>Latest Actual Price</span>
+
+                <strong id="latestPrice">
+                    $147.28
+                </strong>
+
+                <small id="latestTime">
+                    Loading...
+                </small>
+
+            </div>
+
+        </section>
+
+
+        <!-- METRICS -->
+
+        <section class="metrics-grid">
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span>Directional Accuracy</span>
+                    <span class="metric-icon">🎯</span>
+                </div>
+
+                <h2 id="accuracy">
+                    48.46%
+                </h2>
+
+                <p>
+                    Correct movement predictions
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span>Price MAE</span>
+                    <span class="metric-icon">📏</span>
+                </div>
+
+                <h2 id="mae">
+                    $0.212
+                </h2>
+
+                <p>
+                    Mean absolute error
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span>Price RMSE</span>
+                    <span class="metric-icon">📊</span>
+                </div>
+
+                <h2 id="rmse">
+                    $0.297
+                </h2>
+
+                <p>
+                    Root mean square error
+                </p>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span>Test Predictions</span>
+                    <span class="metric-icon">🔢</span>
+                </div>
+
+                <h2 id="predictionCount">
+                    14,533
+                </h2>
+
+                <p>
+                    December 2022 test data
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- PERFORMANCE -->
+
+        <section id="performance" class="chart-card">
+
+            <div class="chart-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        PERFORMANCE
+                    </p>
+
+                    <h2>
+                        Actual vs Predicted Price
+                    </h2>
+
+                </div>
+
+
+                <div class="chart-controls">
+
+                    <button class="range-btn active" data-range="50">
+                        50
+                    </button>
+
+                    <button class="range-btn" data-range="100">
+                        100
+                    </button>
+
+                    <button class="range-btn" data-range="500">
+                        500
+                    </button>
+
+                    <button class="range-btn" data-range="all">
+                        All
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-wrapper">
+
+                <canvas id="priceChart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ERROR CHART -->
+
+        <section class="chart-card">
+
+            <div class="chart-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        MODEL ERROR
+                    </p>
+
+                    <h2>
+                        Prediction Error
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-wrapper small">
+
+                <canvas id="errorChart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- MODEL INFO -->
+
+        <section class="info-grid" id="predictions">
+
+
+            <div class="info-card">
+
+                <p class="eyebrow">
+                    MODEL
+                </p>
+
+                <h2>
+                    Random Forest
+                </h2>
+
+                <div class="info-row">
+
+                    <span>Estimators</span>
+                    <strong>300</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Max Depth</span>
+                    <strong>12</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Min Samples Leaf</span>
+                    <strong>10</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Prediction Horizon</span>
+                    <strong>5 minutes</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <p class="eyebrow">
+                    DATASET
+                </p>
+
+                <h2>
+                    AAPL Historical Data
+                </h2>
+
+                <div class="info-row">
+
+                    <span>Training Rows</span>
+                    <strong>31,849</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Testing Rows</span>
+                    <strong>14,533</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Features</span>
+                    <strong>14</strong>
+
+                </div>
+
+                <div class="info-row">
+
+                    <span>Test Period</span>
+                    <strong>Dec 2022</strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- TABLE -->
+
+        <section class="table-card">
+
+            <div class="table-header">
+
+                <div>
+
+                    <p class="eyebrow">
+                        PREDICTIONS
+                    </p>
+
+                    <h2>
+                        Recent Predictions
+                    </h2>
+
+                </div>
+
+
+                <div class="search-box">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search timestamp..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Time</th>
+
+                            <th>Actual Price</th>
+
+                            <th>Predicted Price</th>
+
+                            <th>Error</th>
+
+                            <th>Result</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="predictionTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <span>
+                StockAI · Machine Learning Prediction System
+            </span>
+
+            <span>
+                Random Forest Regression
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
